@@ -1,85 +1,43 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <div
+    class="app"
+    :class="theme"
+  >
+    <Header />
+    <router-view />
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
+<script lang="ts" setup>
+import { computed, onMounted, watch } from "vue";
+import { changeTheme } from "./composables/changeTheme";
+import { useThemeStore } from "./stores/theme";
+import { darkColors } from "./helpers/darkColors";
+import Header from "./components/pages/header/Header.vue";
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
+const themeStore = useThemeStore();
+const theme = computed(() => themeStore.theme);
 
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+const setRootVariables = () => {
+  const root = document.documentElement;
+  for (const [key, value] of Object.entries(darkColors)) {
+    root.style.setProperty(key, value);
   }
+};
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
+watch(theme, changeTheme);
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+onMounted(setRootVariables);
+</script>
 
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
+<style lang="sass">
+@import "assets/fonts/stylesheet.css"
+.app
+  font-family: 'HelveticaNeueCyr'
+  min-height: 100vh
+  background-color: var(--pageBackground)
+  display: flex
+  flex-direction: column
+  color: var(--primaryText)
+  row-gap: 70px
 </style>
